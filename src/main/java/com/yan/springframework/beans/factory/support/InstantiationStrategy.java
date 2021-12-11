@@ -1,6 +1,6 @@
 package com.yan.springframework.beans.factory.support;
 
-import com.yan.springframework.beans.BeansExcepton;
+import com.yan.springframework.beans.BeansException;
 import com.yan.springframework.beans.factory.config.BeanDefinition;
 
 import java.lang.reflect.Constructor;
@@ -14,5 +14,5 @@ import java.lang.reflect.Constructor;
  */
 public interface InstantiationStrategy {
 
-    Object instantiate(BeanDefinition beanDefinition, String beanName, Constructor ctor, Object[] args) throws BeansExcepton;
+    Object instantiate(BeanDefinition beanDefinition, String beanName, Constructor ctor, Object[] args) throws BeansException;
 }

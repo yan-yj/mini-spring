@@ -5,6 +5,7 @@ import com.yan.springframework.beans.PropertyValues;
 public class BeanDefinition {
 
     private Class beanclass;
+
     private PropertyValues propertyValues;
 
     public BeanDefinition(Class beanclass) {

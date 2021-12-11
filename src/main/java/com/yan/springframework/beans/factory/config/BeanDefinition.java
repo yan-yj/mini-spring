@@ -7,8 +7,13 @@ public class BeanDefinition {
     public BeanDefinition(Class beanclass) {
         this.beanclass = beanclass;
     }
+
     public Class getBeanclass() {
         return beanclass;
+    }
+
+    public void setBeanclass(Class beanclass){
+        this.beanclass = beanclass;
     }
 
 }

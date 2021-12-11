@@ -3,6 +3,8 @@ package com.yan.springframework.beans.factory;
 
 public interface BeanFactory {
 
-    public Object getBean(String name);
+    Object getBean(String name);
+
+    Object getBean(String anme, Object... args);
 
 }

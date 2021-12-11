@@ -1,25 +1,28 @@
 package com.yan.springframework.test.bean;
 
 public class UserService {
-    private String name;
 
-    public UserService() {
+    private String uId;
+
+    private UserDao userDao;
+
+    public void queryUserInfo() {
+        System.out.println("你好，" + userDao.queryUserName(uId));
     }
 
-    public UserService(String name) {
-        this.name = name;
+    public String getuId() {
+        return uId;
     }
 
-    public void queryUserInfo(){
-
-        System.out.println("Hello,"+name+"!");
-
+    public void setuId(String uId) {
+        this.uId = uId;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("");
-        sb.append(name);
-        return sb.toString();
+    public UserDao getUserDao() {
+        return userDao;
+    }
+
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
     }
 }

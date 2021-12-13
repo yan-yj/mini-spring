@@ -6,8 +6,9 @@ public class UserService {
 
     private UserDao userDao;
 
-    public void queryUserInfo() {
-        System.out.println("你好，" + userDao.queryUserName(uId));
+    public String queryUserInfo() {
+//        System.out.println("你好，" + userDao.queryUserName(uId));
+        return "你好，" + userDao.queryUserName(uId);
     }
 
     public String getuId() {

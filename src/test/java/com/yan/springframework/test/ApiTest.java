@@ -7,6 +7,7 @@ import com.yan.springframework.beans.factory.config.BeanDefinition;
 import com.yan.springframework.beans.factory.BeanFactory;
 import com.yan.springframework.beans.factory.config.BeanReference;
 import com.yan.springframework.beans.factory.support.DefaultListableBeanFactory;
+import com.yan.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import com.yan.springframework.core.io.DefaultResourceLoader;
 import com.yan.springframework.core.io.Resource;
 import com.yan.springframework.test.bean.UserDao;
@@ -63,7 +64,25 @@ public class ApiTest {
 
     @Test
     public void test_file() throws IOException {
-        Resource resource = resourceLoader.getResource("");
+        Resource resource = resourceLoader.getResource("https://github.com/yan-yj/mini-spring/blob/master/src/test/resources/important.properties");
+        InputStream inputStream = resource.getInputStream();
+        String content = IoUtil.readUtf8(inputStream);
+        System.out.println(content);
+    }
+
+    @Test
+    public void test_xml(){
+        // 1.初始化
+        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+
+        // 2.读取配置文件
+        XmlBeanDefinitionReader xmlBeanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
+        xmlBeanDefinitionReader.loadBeanDefinitions("classpath:spring.xml");
+
+        // 3.获取Bean对象调用方法
+        UserService userService = beanFactory.getBean("userService",UserService.class);
+        String result = userService.queryUserInfo();
+        System.out.println(result);
     }
 }
 

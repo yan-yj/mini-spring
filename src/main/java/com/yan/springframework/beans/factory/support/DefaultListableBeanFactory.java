@@ -3,11 +3,13 @@ package com.yan.springframework.beans.factory.support;
 import com.yan.springframework.beans.BeansException;
 import com.yan.springframework.beans.factory.ConfigurableListableBeanFactory;
 import com.yan.springframework.beans.factory.config.BeanDefinition;
+import com.yan.springframework.beans.factory.config.BeanPostProcessor;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory implements BeanDefinitionRegistry, ConfigurableListableBeanFactory {
+
     private Map<String,BeanDefinition> beanDefinitionMap = new HashMap<>();
 
     @Override
@@ -17,6 +19,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
             return beanDefinition;
         }
         throw new BeansException(name + "is not defined");
+    }
+
+    @Override
+    public void preInstantiateSingletons() throws BeansException {
+        beanDefinitionMap.keySet().forEach(this::getBean);
     }
 
     @Override
@@ -38,7 +45,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
     @Override
     public String[] getBeanDefinitionNames() {
-        return beanDefinitionMap.keySet().toArray(new String[0]);
+        return beanDefinitionMap.keySet().toArray(new String[0]); // 此处 new String[0] 只起到类型转换的作用
     }
 
 
@@ -46,4 +53,5 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     public void registerBeanDefinition(String name, BeanDefinition beanDefinition) {
         beanDefinitionMap.put(name,beanDefinition);
     }
+
 }

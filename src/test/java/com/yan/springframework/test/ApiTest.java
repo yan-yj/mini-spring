@@ -8,10 +8,13 @@ import com.yan.springframework.beans.factory.BeanFactory;
 import com.yan.springframework.beans.factory.config.BeanReference;
 import com.yan.springframework.beans.factory.support.DefaultListableBeanFactory;
 import com.yan.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import com.yan.springframework.context.support.ClassPathXmlApplicationContext;
 import com.yan.springframework.core.io.DefaultResourceLoader;
 import com.yan.springframework.core.io.Resource;
 import com.yan.springframework.test.bean.UserDao;
 import com.yan.springframework.test.bean.UserService;
+import com.yan.springframework.test.common.MyBeanFactoryPostProcessor;
+import com.yan.springframework.test.common.MyBeanPostProcessor;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.NoOp;
 import org.junit.Before;
@@ -26,63 +29,38 @@ import java.util.concurrent.Callable;
 public class ApiTest {
 
     @Test
-    public void test_BeanFactory(){
-        // 初始化BeanFactory
+    public void test_BeanFactoryPostProcessorAndBeanPostProcessor(){
+        // 1 初始化BeanFactory
         DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
-        // 注册
-        beanFactory.registerBeanDefinition("userDao",new BeanDefinition(UserDao.class));
+        // 2 读取配置&注册
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
+        reader.loadBeanDefinitions("classpath:spring.xml");
 
-        // 设置属性
-        PropertyValues propertyValues = new PropertyValues();
-        propertyValues.addPropertyValue(new PropertyValue("uId", "10001"));
-        propertyValues.addPropertyValue(new PropertyValue("userDao", new BeanReference("userDao")));
+        // 3 BeanDefinition 加载完成 & Bean实例化之前，修改 BeanDefinition 的属性值
+        MyBeanFactoryPostProcessor beanFactoryPostProcessor = new MyBeanFactoryPostProcessor();
+        beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
 
-        // 注入bean
-        BeanDefinition beanDefinition = new BeanDefinition(UserService.class, propertyValues);
-        beanFactory.registerBeanDefinition("userService", beanDefinition);
+        // 4 Bean实例化之后，修改 Bean 属性信息
+        MyBeanPostProcessor beanPostProcessor = new MyBeanPostProcessor();
+        beanFactory.addBeanPostProcessor(beanPostProcessor);
 
-        // UserService 获取bean
-        UserService userService = (UserService) beanFactory.getBean("userService");
-        userService.queryUserInfo();
+        // 5 获取Bean对象调用方法
+        UserService userService = beanFactory.getBean("userService",UserService.class);
+        String result = userService.queryUserInfo();
+        System.out.println("测试结果:"+result);
     }
 
-    private DefaultResourceLoader resourceLoader;
-
-    @Before
-    public void init(){
-        resourceLoader = new DefaultResourceLoader();
-    }
-
-    @Test
-    public void test_classpath() throws IOException {
-        Resource resource = resourceLoader.getResource("src/test/resources/important.properties");
-        InputStream inputStream = resource.getInputStream();
-        String content = IoUtil.readUtf8(inputStream);
-        System.out.println(content);
-    }
-
-    @Test
-    public void test_file() throws IOException {
-        Resource resource = resourceLoader.getResource("https://github.com/yan-yj/mini-spring/blob/master/src/test/resources/important.properties");
-        InputStream inputStream = resource.getInputStream();
-        String content = IoUtil.readUtf8(inputStream);
-        System.out.println(content);
-    }
 
     @Test
     public void test_xml(){
-        // 1.初始化
-        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+        // 1 初始化
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:springPostProcessor.xml");
 
-        // 2.读取配置文件
-        XmlBeanDefinitionReader xmlBeanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
-        xmlBeanDefinitionReader.loadBeanDefinitions("classpath:spring.xml");
-
-        // 3.获取Bean对象调用方法
-        UserService userService = beanFactory.getBean("userService",UserService.class);
+        // 2 获取Bean对象调用方法
+        UserService userService = applicationContext.getBean("userService",UserService.class);
         String result = userService.queryUserInfo();
-        System.out.println(result);
+        System.out.println("测试结果："+result);
     }
 }
 

@@ -85,4 +85,14 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         // 5 提前实例化单例Bean对象
         beanFactory.preInstantiateSingletons();
     }
+
+    @Override
+    public void registerShutdownHook(){
+        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
+    }
+
+    @Override
+    public void close(){
+        getBeanFactory().destroySingletons();
+    }
 }

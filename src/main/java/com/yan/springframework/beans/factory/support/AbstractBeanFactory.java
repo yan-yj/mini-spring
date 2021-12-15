@@ -1,7 +1,6 @@
 package com.yan.springframework.beans.factory.support;
 
 import com.yan.springframework.beans.BeansException;
-import com.yan.springframework.beans.factory.BeanFactory;
 import com.yan.springframework.beans.factory.config.BeanDefinition;
 import com.yan.springframework.beans.factory.config.BeanPostProcessor;
 import com.yan.springframework.beans.factory.config.ConfigurableBeanFactory;

@@ -13,10 +13,10 @@ public class UserService implements BeanNameAware, BeanClassLoaderAware, BeanFac
     private String uId;
     private String company;
     private String location;
-    private UserDao userDao;
+    private IUserDao userDao;
 
     public String queryUserInfo() {
-        return userDao.queryUserName(uId) + "," + company + "," + location;
+        return userDao.querryUserName(uId) + "," + company + "," + location;
     }
 
     public ApplicationContext getApplicationContext() {
@@ -51,11 +51,11 @@ public class UserService implements BeanNameAware, BeanClassLoaderAware, BeanFac
         this.location = location;
     }
 
-    public UserDao getUserDao() {
+    public IUserDao getUserDao() {
         return userDao;
     }
 
-    public void setUserDao(UserDao userDao) {
+    public void setUserDao(IUserDao userDao) {
         this.userDao = userDao;
     }
 

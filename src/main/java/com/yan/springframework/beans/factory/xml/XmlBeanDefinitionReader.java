@@ -4,7 +4,6 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.XmlUtil;
 import com.yan.springframework.beans.BeansException;
 import com.yan.springframework.beans.PropertyValue;
-import com.yan.springframework.beans.PropertyValues;
 import com.yan.springframework.beans.factory.config.BeanDefinition;
 import com.yan.springframework.beans.factory.config.BeanReference;
 import com.yan.springframework.beans.factory.support.AbstractBeanDefinitionReader;
@@ -89,7 +88,11 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
             String className = bean.getAttribute("class");
             String initMethodName = bean.getAttribute("init-method");
             String destroyMethodName = bean.getAttribute("destroy-method");
+            String beanScope = bean.getAttribute("scope");
+
+            // 获取Class
             Class<?> clazz = Class.forName(className);
+            // 优先级 id > name
             String beanName = StrUtil.isNotEmpty(id) ? id : name;
             if (StrUtil.isEmpty(beanName)){
                 beanName = StrUtil.lowerFirst(clazz.getSimpleName());
@@ -99,6 +102,10 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
             BeanDefinition beanDefinition = new BeanDefinition(clazz);
             beanDefinition.setInitMethodName(initMethodName);
             beanDefinition.setDestroyMethodName(destroyMethodName);
+
+            if (StrUtil.isNotEmpty(beanScope)){
+                beanDefinition.setScope(beanScope);
+            }
 
             // 读取属性并填充
             for (int j = 0; j < bean.getChildNodes().getLength(); j++){

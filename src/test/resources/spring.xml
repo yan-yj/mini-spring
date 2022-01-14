@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
+    <bean id="userService" class="com.yan.springframework.test.bean.UserService"/>
 
-<!--    <bean id="userDao" class="com.yan.springframework.test.bean.UserDao" init-method="initData" destroy-method="destroyData"/>-->
-<!--    <bean id="userService" class="com.yan.springframework.test.bean.UserService" scope="prototype">-->
-<!--        <property name="uId" value="10001"/>-->
-<!--        <property name="company" value="腾讯"/>-->
-<!--        <property name="location" value="深圳"/>-->
-<!--        <property name="userDao" ref="proxyUserDao"/>-->
-<!--    </bean>-->
+    <bean class="com.yan.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
 
-<!--    <bean id="proxyUserDao" class="com.yan.springframework.test.bean.ProxyBeanFactory"/>-->
-    <bean class="com.yan.springframework.test.event.ContextRefreshedEventListener"/>
+    <bean id="beforeAdvice" class="com.yan.springframework.test.bean.UserServiceBeforeAdvice"/>
 
-    <bean class="com.yan.springframework.test.event.CustomEventListener"/>
+    <bean id="methodInterceptor" class="com.yan.springframework.aop.framework.adapter.MethodBeforeAdviceInterceptor">
+        <property name="advice" ref="beforeAdvice"/>
+    </bean>
 
-    <bean class="com.yan.springframework.test.event.ContextClosedEventListener"/>
-
+    <bean id="pointcutAdvisor" class="com.yan.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor">
+        <property name="expression" value="execution(* com.yan.springframework.test.bean.IUserService.*(..))"/>
+        <property name="advice" ref="methodInterceptor"/>
+    </bean>
 </beans>

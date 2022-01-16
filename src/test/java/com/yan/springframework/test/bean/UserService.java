@@ -27,7 +27,7 @@ public class UserService implements IUserService{
         }catch (InterruptedException e){
             e.printStackTrace();
         }
-        return "小胡，100001，广州";
+        return "小胡，100001，广州 " + token;
     }
 
     @Override

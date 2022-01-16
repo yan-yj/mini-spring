@@ -1,5 +1,7 @@
 package com.yan.springframework.aop;
 
+import com.yan.springframework.util.ClassUtils;
+
 /**
  * TargetSource
  *
@@ -15,10 +17,20 @@ public class TargetSource {
         this.target = target;
     }
 
+    /**
+     * @return the type of targets returned by this {@link TargetSource}
+     */
     public Class<?>[] getTargetClass() {
-        return this.target.getClass().getInterfaces();
+        Class<?> clazz = this.target.getClass();
+        clazz = ClassUtils.isCglibProxyClass(clazz) ? clazz.getSuperclass() : clazz;
+        return clazz.getInterfaces();
     }
 
+    /**
+     * Return a target instance. Invoked immediately before the
+     * AOP framework calls the "target" of an AOP method invocation.
+     * @return Exception if the target object can't be resolved
+     */
     public Object getTarget(){
         return this.target;
     }

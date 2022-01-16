@@ -38,6 +38,11 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
     }
 
     @Override
+    public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
+        return true;
+    }
+
+    @Override
     public PropertyValues postProcessPropertyValues(PropertyValues pvs, Object bean, String beanName) {
         // 1. 处理注解 @Value
         Class<?> clazz = bean.getClass();

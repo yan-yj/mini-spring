@@ -19,32 +19,55 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     private InstantiationStrategy instantiationStrategy = new CglibSubclassingInstantiationStrategy();
 
     @Override
-    protected Object createBean(String name, BeanDefinition beanDefinition, Object[] args) throws BeansException {
+    protected Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeansException {
         Object bean = null;
         try {
             // 判断是否返回代理 Bean 对象
-            bean = resolveBeforeInstantiation(name, beanDefinition);
+            bean = resolveBeforeInstantiation(beanName, beanDefinition);
             if (null != bean) {
                 return bean;
             }
             // 实例化
-            bean = createBeanInstance(beanDefinition, name, args);
+            bean = createBeanInstance(beanDefinition, beanName, args);
+            // 在设置 Bean 属性之前，允许 BeanPostProcessor 修改属性值
+            applyBeanPostProcessorsBeforeApplyingPropertyValues(beanName, bean, beanDefinition);
             // 填充属性
-            applyPropertyValues(name, bean, beanDefinition);
+            applyPropertyValues(beanName, bean, beanDefinition);
             // 执行 Bean 的初始化方法和 BeanPostProcessor 的前置和后置处理方法
-            bean = initializeBean(name, bean, beanDefinition);
+            bean = initializeBean(beanName, bean, beanDefinition);
         } catch (Exception e) {
             throw new BeansException("Instantiation of bean failed", e);
         }
         // 注册实现了 DisposableBean 接口的 Bean 对象
-        registerDisposableBeanIfNecessary(name, bean, beanDefinition);
+        registerDisposableBeanIfNecessary(beanName, bean, beanDefinition);
 
         // 判断SCOPE_SINGLETON、SCOPE_PROTOTYPE
         if (beanDefinition.isSingleton()){
-            addSingleton(name, bean);
+            addSingleton(beanName, bean);
         }
 
         return bean;
+    }
+
+    /**
+     * 在设置 Bean 属性之前，允许 BeanPostProcessor 修改属性值
+     *
+     * @param beanName
+     * @param bean
+     * @param beanDefinition
+     */
+    protected void applyBeanPostProcessorsBeforeApplyingPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+                PropertyValues pvs = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessPropertyValues(
+                        beanDefinition.getPropertyValues(), bean, beanName);
+                if (null != pvs) {
+                    for (PropertyValue propertyValue : pvs.getPropertyValues()) {
+                        beanDefinition.getPropertyValues().addPropertyValue(propertyValue);
+                    }
+                }
+            }
+        }
     }
 
     protected Object resolveBeforeInstantiation(String beanName, BeanDefinition beanDefinition) {

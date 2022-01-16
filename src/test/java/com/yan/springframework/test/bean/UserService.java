@@ -1,5 +1,8 @@
 package com.yan.springframework.test.bean;
 
+import com.yan.springframework.beans.factory.annotation.Autowired;
+import com.yan.springframework.stereotype.Component;
+
 import java.util.Random;
 
 /**
@@ -9,7 +12,14 @@ import java.util.Random;
  * @author: yan-yj
  * @time: 2022/1/14 14:34
  */
+@Component("userService")
 public class UserService implements IUserService{
+
+    private String token;
+
+    @Autowired
+    private UserDao userDao;
+
     @Override
     public String queryUserInfo() {
         try {
@@ -28,5 +38,28 @@ public class UserService implements IUserService{
             e.printStackTrace();
         }
         return "注册用户：" + userName + "success!";
+    }
+
+    @Override
+    public String toString() {
+        return "UserService{" +
+                "token='" + token + '\'' +
+                '}';
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public UserDao getUserDao() {
+        return userDao;
+    }
+
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
     }
 }
